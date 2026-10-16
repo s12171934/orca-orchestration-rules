@@ -28,5 +28,5 @@ git clone https://github.com/s12171934/orca-orchestration-rules.git ~/.claude/sk
 
 ## 구성과 공개 면
 
-- `SKILL.md` — 스킬 본문. 형식은 에이전트 도구가 정한다.
+- [[20_Agents/skills/orca-orchestration-rules/SKILL|SKILL.md]] — 스킬 본문. 형식은 에이전트 도구가 정한다.
 - 공개 면은 스킬 이름(`orca-orchestration-rules`)뿐이다. 다른 스킬은 이 이름으로만 이 스킬을 가리킨다.
