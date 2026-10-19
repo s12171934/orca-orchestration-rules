@@ -1,7 +1,7 @@
 ---
 title: orca-orchestration-rules
 created: 2026-10-16
-updated: 2026-10-16
+updated: 2026-10-19
 tags: [domain/인공지능, area/ai에이전트, agent/claude-1b219bef-b3db-4ef6-8088-81f7f0d19120]
 source: ai
 ---
@@ -29,4 +29,5 @@ git clone https://github.com/s12171934/orca-orchestration-rules.git ~/.claude/sk
 ## 구성과 공개 면
 
 - [[20_Agents/skills/orca-orchestration-rules/SKILL|SKILL.md]] — 스킬 본문. 형식은 에이전트 도구가 정한다.
+- [[20_Agents/skills/orca-orchestration-rules/references/코디네이터 비용 실측|코디네이터 비용 실측]] — §3 비용 규칙의 실측 근거와 수치.
 - 공개 면은 스킬 이름(`orca-orchestration-rules`)뿐이다. 다른 스킬은 이 이름으로만 이 스킬을 가리킨다.

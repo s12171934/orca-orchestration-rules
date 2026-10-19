@@ -86,14 +86,24 @@ before dispatch.** The orchestration-specific mechanics on top of them:
 - **Account for every settled worker before waiting again**: re-engage it for the next task,
   retain it deliberately, or release it. A renamed tab counts as user-modified, so releasing
   it settles the bookkeeping without closing anything — disposal stays the user's call.
-- **Batch independent reads into one turn.** A coordinator's token bill is its average
-  context times its turn count, and with no parallel calls the turn count just *is* the tool
-  call count. Measured on two real supervision sessions, batching only the adjacent
-  read-only calls removed 28-30% of all turns; one run of 18 consecutive single-call reads
-  should have been one turn. Split turns only where the next call depends on the last
-  result, and never batch state-changing calls — check each write's result before the next.
-- **Read as little as the judgment needs, and never on a worker's behalf.** Measured on one supervised batch, the coordinator's three largest context items were all things it read for itself — Jira returns 87.7k chars, vault rule docs 64.6k, design docs 56.7k — 66% of its tool-result cost, against $0.08 for everything exchanged with workers. Four rules follow: keep Jira MCP calls to the minimum — its return cannot be narrowed (`MAX_MCP_OUTPUT_TOKENS` is a global truncation and a `PostToolUse` hook fires too late to rewrite a result), so call count is the only variable you control: one JQL for many tickets, never re-ask for a ticket you already have, and no confirming read after a write; leave ticket transitions, comments and description edits to the worker that owns the ticket; cite design-doc line ranges in the brief instead of reading them yourself; and pull rule documents with `grep -n`/`sed -n` at the moment of judgment, never whole.
-- **An idle turn costs full price.** The fixed prefix alone — system prompt, tool definitions, skills, AGENTS.md — bills roughly $0.04 per turn regardless of what the turn does, so a wait split across hundreds of polling turns pays that hundreds of times. This is the cost behind the foreground-wait rule above.
+- **Batch independent reads into one turn.** A coordinator's bill is its average context
+  times its turn count, and without parallel calls the turn count is the tool-call count.
+  Split turns only where the next call depends on the last result, and never batch
+  state-changing calls — check each write's result before the next.
+- **Read as little as the judgment needs, and never on a worker's behalf.** The cost comes
+  from what the coordinator reads for itself, not from what it exchanges with workers:
+  - Keep Jira MCP calls to the minimum — its return cannot be narrowed, so call count is the
+    only lever: one JQL for many tickets, never re-ask for a ticket you already have, no
+    confirming read after a write.
+  - Leave ticket transitions, comments and description edits to the worker that owns the
+    ticket.
+  - Cite design-doc line ranges in the brief instead of reading them yourself.
+  - Pull rule documents with `grep -n`/`sed -n` at the moment of judgment, never whole.
+- **An idle turn costs full price.** The fixed prefix bills on every turn regardless of what
+  the turn does, so a wait split across many polling turns pays it many times — the cost
+  behind the foreground-wait rule above.
+- The measurements behind these three rules are in `references/코디네이터 비용 실측.md`
+  next to this file. Read it only when a rule is being questioned or revised.
 - **Relay corrections immediately.** A worker contradicting the briefing it was given is the
   most valuable thing this arrangement produces; surface it and update the spec of every
   task not yet dispatched.
